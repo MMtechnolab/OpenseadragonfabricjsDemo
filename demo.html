@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OpenSeadragon Fabricjs Overlay Demo</title>
+    <script src="openseadragon/openseadragon.js"></script>
+    <script src="openseadragon-fabricjs-overlay.js"></script>
+
+    <script src="http://code.jquery.com/jquery-1.11.2.min.js"></script>
+    <script src="fabric/fabric.adapted.js"></script>
+    <style type="text/css">
+        html,
+        body,
+        .openseadragon1 {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+    <script>
+
+        // ----------
+        App = {
+            // ----------
+            init: function () {
+                var self = this;
+                var tileSource = {
+                    Image: {
+                        xmlns: "http://schemas.microsoft.com/deepzoom/2008",
+                        Url: "http://openseadragon.github.io/example-images/highsmith/highsmith_files/",
+                        Format: "jpg",
+                        Overlap: "2",
+                        TileSize: "256",
+                        Size: {
+                            Height: "9221",
+                            Width: "7026"
+                        }
+                    }
+                };
+                this.viewer = OpenSeadragon({
+                    id: "contentDiv",
+                    prefixUrl: "openseadragon/images/",
+                    showNavigator: true,
+                    navigatorPosition: "BOTTOM_LEFT",
+                    showRotationControl: true,
+                    tileSources: [{
+                        tileSource: tileSource,
+                        width: 1,
+                        y: 0,
+                        x: 0
+                    }
+                    ]
+                });
+
+                // initialize overlay
+                var options = {
+                    scale: 1000
+                }
+                var overlay = this.viewer.fabricjsOverlay(options);
+
+                $('.draw').on('click', function () {
+                     overlay.fabricCanvas().freeDrawingBrush.color = 'red';
+                overlay.fabricCanvas().freeDrawingBrush.width = 30;
+                    self.viewer.setMouseNavEnabled(false);
+                        self.viewer.outerTracker.setTracking(false);
+                       overlay.fabricCanvas().isDrawingMode = true;
+
+                })
+                $('.stop').on('click', function () {
+                    self.viewer.setMouseNavEnabled(true);
+                    self.viewer.outerTracker.setTracking(true);
+                    overlay.fabricCanvas().isDrawingMode = false;
+
+                })
+
+                $(window).resize(function () {
+                    overlay.resize();
+                    overlay.resizecanvas();
+                });
+            }
+        };
+
+        // ----------
+        $(document).ready(function () {
+            App.init();
+        });
+
+    </script>
+</head>
+<body>
+    <button class="draw">Draw</button>
+    <button class="stop">PAN</button>
+    <div id="contentDiv" class="openseadragon1"></div>
+</body>
+</html>
